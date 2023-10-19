@@ -1,14 +1,15 @@
 #include "Filters.h"
+#include <tuple>
 
 using namespace std;
 
 Image src;
 unsigned char image[SIZE][SIZE];
 unsigned char RGBimage[SIZE][SIZE][RGB];
-unsigned char rgbimage2[SIZE][SIZE][3];
+unsigned char rgbimage2[SIZE][SIZE][RGB];
 unsigned char image2[SIZE][SIZE];
 
-void Filters::mirror_l_r()
+void Filters::mirror_left_to_right()
 {
     if (src.isRGB())
     {
@@ -35,7 +36,7 @@ void Filters::mirror_l_r()
     }
 }
 
-void Filters::mirror_r_l()
+void Filters::mirror_right_to_left()
 {
     if (src.isRGB())
     {
@@ -43,7 +44,7 @@ void Filters::mirror_r_l()
         {
             for (int j{SIZE / 2 - 1}, j2{SIZE / 2}; j >= 0 && j2 < SIZE; --j, j2++)
             {
-                for (unsigned short k{}; k < 3; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
                     RGBimage[i][j][k] = RGBimage[i][j2][k];
                 }
@@ -62,7 +63,7 @@ void Filters::mirror_r_l()
     }
 }
 
-void Filters::mirror_u_d()
+void Filters::mirror_up_to_down()
 {
     if (src.isRGB())
     {
@@ -70,7 +71,7 @@ void Filters::mirror_u_d()
         {
             for (int i{SIZE / 2 - 1}, i2{SIZE / 2}; i >= 0 && i2 < SIZE; --i, i2++)
             {
-                for (unsigned short k{}; k < 3; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                     RGBimage[i2][j][k] = RGBimage[i][j][k];
             }
         }
@@ -87,7 +88,7 @@ void Filters::mirror_u_d()
     }
 }
 
-void Filters::mirror_d_u()
+void Filters::mirror_down_to_up()
 {
     if (src.isRGB())
     {
@@ -95,7 +96,7 @@ void Filters::mirror_d_u()
         {
             for (int i{SIZE / 2 - 1}, i2{SIZE / 2}; i >= 0 && i2 < SIZE; --i, i2++)
             {
-                for (unsigned short k{}; k < 3; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
                     image[i][j] = image[i2][j];
                 }
@@ -135,16 +136,16 @@ void Filters::mirror_half()
     switch (s)
     {
     case 1:
-        mirror_u_d();
+        mirror_up_to_down();
         break;
     case 2:
-        mirror_d_u();
+        mirror_down_to_up();
         break;
     case 3:
-        mirror_r_l();
+        mirror_right_to_left();
         break;
     case 4:
-        mirror_l_r();
+        mirror_left_to_right();
         break;
     }
 }
@@ -152,13 +153,23 @@ void Filters::mirror_half()
 void Filters::rotate_90_deg()
 {
     int i{}, j{SIZE - 1};
+    bool colored{src.isRGB()};
     while (i < j)
     {
         for (int x = i; x < j; ++x)
         {
-            swap(image[i][x], image[x][j]);
-            swap(image[i][x], image[j][j - x + i]);
-            swap(image[i][x], image[j - x + i][i]);
+            if (colored)
+            {
+                swap(RGBimage[i][x], RGBimage[x][j]);
+                swap(RGBimage[i][x], RGBimage[j][j - x + i]);
+                swap(RGBimage[i][x], RGBimage[j - x + i][i]);
+            }
+            else
+            {
+                swap(image[i][x], image[x][j]);
+                swap(image[i][x], image[j][j - x + i]);
+                swap(image[i][x], image[j - x + i][i]);
+            }
         }
         i++, j--;
     }
@@ -166,12 +177,20 @@ void Filters::rotate_90_deg()
 void Filters::rotate_180_deg()
 {
     int rows{};
+    bool colored{src.isRGB()};
     while (rows < SIZE / 2)
     {
         int coloumns{};
         while (coloumns < SIZE)
         {
-            swap(image[rows][coloumns], image[SIZE - 1 - rows][SIZE - 1 - coloumns]);
+            if (colored)
+            {
+                swap(RGBimage[rows][coloumns], RGBimage[SIZE - 1 - rows][SIZE - 1 - coloumns]);
+            }
+            else
+            {
+                swap(image[rows][coloumns], image[SIZE - 1 - rows][SIZE - 1 - coloumns]);
+            }
             coloumns++;
         }
         rows++;
@@ -180,13 +199,23 @@ void Filters::rotate_180_deg()
 void Filters::rotate_270_deg()
 {
     int i{}, j{SIZE - 1};
+    bool colored{src.isRGB()};
     while (i < j)
     {
         for (int x = j; x > i; --x)
         {
-            swap(image[i][x], image[j - x + i][i]);
-            swap(image[i][x], image[j][j - x + i]);
-            swap(image[i][x], image[x][j]);
+            if (colored)
+            {
+                swap(RGBimage[i][x], RGBimage[j - x + i][i]);
+                swap(RGBimage[i][x], RGBimage[j][j - x + i]);
+                swap(RGBimage[i][x], RGBimage[x][j]);
+            }
+            else
+            {
+                swap(image[i][x], image[j - x + i][i]);
+                swap(image[i][x], image[j][j - x + i]);
+                swap(image[i][x], image[x][j]);
+            }
         }
         i++, j--;
     }
@@ -217,7 +246,7 @@ void Filters::invertImage()
         {
             for (int j{}; j < SIZE; j++)
             {
-                for (unsigned short k{}; k < 3; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
                     RGBimage[i][j][k] = 255 - RGBimage[i][j][k];
                 }
@@ -466,7 +495,7 @@ void Filters::Lining()
         {
             for (int j{}; j < SIZE; ++j)
             {
-                for (unsigned short k{}; k < 3; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
                     if (image[i][j] == 255)
                     {
@@ -528,49 +557,104 @@ void Filters::crop()
 }
 void Filters::blur()
 {
-    unsigned char copy[SIZE][SIZE];
-    for (int i{}; i < SIZE; ++i)
+    if (src.isRGB())
     {
-        bool first_row{i == 0}, last_row{i == SIZE - 1};
-        for (int j{}; j < SIZE; ++j)
+        for (int i{}; i < SIZE; ++i)
         {
-            if (!(last_row || first_row))
+            bool first_row{i == 0}, last_row{i == SIZE - 1};
+            for (int j{}; j < SIZE; ++j)
             {
-                if (j == 0)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
-                    copy[i][j] = (image[i][j] + image[i][j + 1] + image[i - 1][j] + image[i - 1][j + 1] + image[i + 1][j] + image[i + 1][j + 1]) / 6;
-                }
-                else if (j == SIZE - 1)
-                {
-                    copy[i][j] = (image[i][j] + image[i][j - 1] + image[i - 1][j] + image[i - 1][j - 1] + image[i + 1][j] + image[i + 1][j - 1]) / 6;
-                }
-                else
-                {
-                    copy[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - 1][j] + image[i - 1][j - 1] + image[i - 1][j + 1] + image[i + 1][j] + image[i + 1][j - 1] + image[i + 1][j + 1]) / 9;
+                    if (!(last_row || first_row))
+                    {
+                        if (j == 0)
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j + 1][k] + RGBimage[i - 1][j][k] + RGBimage[i - 1][j + 1][k] + RGBimage[i + 1][j][k] + RGBimage[i + 1][j + 1][k]) / 6;
+                        }
+                        else if (j == SIZE - 1)
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j - 1][k] + RGBimage[i - 1][j][k] + RGBimage[i - 1][j - 1][k] + RGBimage[i + 1][j][k] + RGBimage[i + 1][j - 1][k]) / 6;
+                        }
+                        else
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j + 1][k] + RGBimage[i][j - 1][k] + RGBimage[i - 1][j][k] + RGBimage[i - 1][j - 1][k] + RGBimage[i - 1][j + 1][k] + RGBimage[i + 1][j][k] + RGBimage[i + 1][j - 1][k] + RGBimage[i + 1][j + 1][k]) / 9;
+                        }
+                    }
+                    else
+                    {
+                        if (j == 0)
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j + 1][k] + RGBimage[i - last_row + first_row][j][k] + RGBimage[i - last_row + first_row][j + 1][k]) / 4;
+                        }
+                        else if (j == SIZE - 1)
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j - 1][k] + RGBimage[i - last_row + first_row][j][k] + RGBimage[i - last_row + first_row][j - 1][k]) / 4;
+                        }
+                        else
+                        {
+                            rgbimage2[i][j][k] = (RGBimage[i][j][k] + RGBimage[i][j + 1][k] + RGBimage[i][j - 1][k] + RGBimage[i - last_row + first_row][j][k] + RGBimage[i - last_row + first_row][j - 1][k] + RGBimage[i - last_row + first_row][j + 1][k]) / 6;
+                        }
+                    }
                 }
             }
-            else
+        }
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
             {
-                if (j == 0)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
-                    copy[i][j] = (image[i][j] + image[i][j + 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j + 1]) / 4;
-                }
-                else if (j == SIZE - 1)
-                {
-                    copy[i][j] = (image[i][j] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1]) / 4;
-                }
-                else
-                {
-                    copy[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1] + image[i - last_row + first_row][j + 1]) / 6;
+                    RGBimage[i][j][k] = rgbimage2[i][j][k];
                 }
             }
         }
     }
-    for (int i{}; i < SIZE; ++i)
+    else
     {
-        for (int j{}; j < SIZE; ++j)
+        for (int i{}; i < SIZE; ++i)
         {
-            image[i][j] = copy[i][j];
+            bool first_row{i == 0}, last_row{i == SIZE - 1};
+            for (int j{}; j < SIZE; ++j)
+            {
+                if (!(last_row || first_row))
+                {
+                    if (j == 0)
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j + 1] + image[i - 1][j] + image[i - 1][j + 1] + image[i + 1][j] + image[i + 1][j + 1]) / 6;
+                    }
+                    else if (j == SIZE - 1)
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j - 1] + image[i - 1][j] + image[i - 1][j - 1] + image[i + 1][j] + image[i + 1][j - 1]) / 6;
+                    }
+                    else
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - 1][j] + image[i - 1][j - 1] + image[i - 1][j + 1] + image[i + 1][j] + image[i + 1][j - 1] + image[i + 1][j + 1]) / 9;
+                    }
+                }
+                else
+                {
+                    if (j == 0)
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j + 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j + 1]) / 4;
+                    }
+                    else if (j == SIZE - 1)
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1]) / 4;
+                    }
+                    else
+                    {
+                        image2[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1] + image[i - last_row + first_row][j + 1]) / 6;
+                    }
+                }
+            }
+        }
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image[i][j] = image2[i][j];
+            }
         }
     }
 }
@@ -658,64 +742,136 @@ void Filters::shrink_half()
 {
     if (src.isRGB())
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                    RGBimage[i][j][k] = 255;
+                }
+            }
+        }
         for (int i = 0; i < SIZE; i++)
         {
             for (int j = 0; j < SIZE; j++)
             {
-                for (unsigned k = 0; k < RGB; k++)
+                for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 2][j / 2][k] = RGBimage[i][j][k];
+                    RGBimage[i / 2][j / 2][k] = rgbimage2[i][j][k];
                 }
             }
         }
     }
     else
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image2[i][j] = image[i][j];
+                image[i][j] = 255;
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                image[i / 2][j / 2] = image2[i][j];
+            }
+        }
     }
 }
 void Filters::shrink_one_third()
 {
     if (src.isRGB())
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                    RGBimage[i][j][k] = 255;
+                }
+            }
+        }
         for (int i = 0; i < SIZE; i++)
         {
             for (int j = 0; j < SIZE; j++)
             {
                 for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 3][j / 3][k / 3] = RGBimage[i][j][k];
+                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k];
                 }
             }
         }
     }
     else
     {
-        // for (int i = 0; i < SIZE; i++)
-        // {
-        //     for (int j = 0; j < SIZE; j++)
-        //     {
-        //         image[i / 3][j / 3][k / 3] = RGBimage[i][j][k];
-        //     }
-        // }
+
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image2[i][j] = image[i][j];
+                image[i][j] = 255;
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                image[i / 3][j / 3] = image2[i][j];
+            }
+        }
     }
 }
 void Filters::shrink_one_fourth()
 {
     if (src.isRGB())
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                    RGBimage[i][j][k] = 255;
+                }
+            }
+        }
         for (int i = 0; i < SIZE; i++)
         {
             for (int j = 0; j < SIZE; j++)
             {
                 for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 4][j / 4][k / 4] = RGBimage[i][j][k];
+                    RGBimage[i / 4][j / 4][k] = rgbimage2[i][j][k];
                 }
             }
         }
     }
     else
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image2[i][j] = image[i][j];
+                image[i][j] = 255;
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                image[i / 4][j / 4] = image2[i][j];
+            }
+        }
     }
 }
 void Filters::shrink()
@@ -756,7 +912,7 @@ void Filters::merge()
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    for (unsigned short k{}; k < 3; ++k)
+                    for (unsigned short k{}; k < RGB; ++k)
                     {
                         RGBimage[i][j][k] = (RGBimage[i][j][k] + rgbimage2[i][j][k]) / 2;
                     }
@@ -769,7 +925,7 @@ void Filters::merge()
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    for (unsigned short k{}; k < 3; ++k)
+                    for (unsigned short k{}; k < RGB; ++k)
                     {
                         RGBimage[i][j][k] = (RGBimage[i][j][k] + image2[i][j]) / 2;
                     }
@@ -782,7 +938,7 @@ void Filters::merge()
             {
                 for (int j = 0; j < SIZE; j++)
                 {
-                    for (unsigned short k{}; k < 3; ++k)
+                    for (unsigned short k{}; k < RGB; ++k)
                     {
                         RGBimage[i][j][k] = (rgbimage2[i][j][k] + image[i][j]) / 2;
                     }
@@ -805,24 +961,335 @@ void Filters::merge()
 
 void Filters::skewH()
 {
-    if(src.isRGB())
+    double theta;
+    cout << "enter angle: ";
+    cin >> theta;
+    double xtan = ::tan((theta * 22) / (7 * 180));
+    double x;
+    x = SIZE / (1 + xtan);
+    double step = SIZE - x;
+    double move = step / SIZE;
+    if (src.isRGB())
     {
-
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                    RGBimage[i][j][k] = 255;
+                }
+            }
+        }
+        for (int j = 0; j < SIZE; j++)
+        {
+            step = ceil(SIZE - x);
+            for (int i = 0; i < SIZE; i++)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    RGBimage[i][(j / int(SIZE / x)) + int(step)][k] = rgbimage2[i][j][k];
+                }
+                step -= move;
+            }
+        }
     }
     else
     {
-
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image2[i][j] = image[i][j];
+                image[i][j] = 255;
+            }
+        }
+        // shrink and shift
+        for (int j = 0; j < SIZE; j++)
+        {
+            step = ceil(SIZE - x);
+            for (int i = 0; i < SIZE; i++)
+            {
+                image[i][(j / int(SIZE / x)) + int(step)] = image2[i][j];
+                step -= move;
+            }
+        }
     }
+    cout << "Image skewed " << theta << " degrees upwards!" << endl;
 }
 void Filters::skewV()
 {
-    if(src.isRGB())
+    double theta;
+    cout << "enter angle: ";
+    cin >> theta;
+    double xtan = ::tan((theta * 22) / (7 * 180));
+    double x;
+    x = SIZE / (1 + xtan);
+    double step = SIZE - x;
+    double move = step / SIZE;
+    if (src.isRGB())
     {
-
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                    RGBimage[i][j][k] = 255;
+                }
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            step = ceil(SIZE - x);
+            for (int j = 0; j < SIZE; j++)
+            {
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    RGBimage[(i / int(SIZE / x)) + int(step)][j][k] = rgbimage2[i][j][k];
+                }
+                step -= move;
+            }
+        }
     }
     else
     {
+        for (int i{}; i < SIZE; ++i)
+        {
+            for (int j{}; j < SIZE; ++j)
+            {
+                image2[i][j] = image[i][j];
+                image[i][j] = 255;
+            }
+        }
+        // shrink and shift
+        for (int i = 0; i < SIZE; i++)
+        {
+            step = ceil(SIZE - x);
+            for (int j = 0; j < SIZE; j++)
+            {
+                image[(i / int(SIZE / x)) + int(step)][j] = image2[i][j];
+                step -= move;
+            }
+        }
+    }
+    cout << "Image skewed " << theta << " degrees to the right!" << endl;
+}
+bool isValid(int &num)
+{
+    while (num < 1 || num > 4)
+    {
+        cout << "Invalid Number\n";
+        cout << "Please enter a number between 1 and 4\n";
+        cin >> num;
+    }
+    return true;
+}
 
+tuple<int, int> quadrantIndices(int n)
+{
+    int s{}, k{};
+    if (n == 1)
+    {
+        s = k = 0;
+    }
+    else if (n == 2)
+    {
+        s = 0, k = 127;
+    }
+    else if (n == 3)
+    {
+        s = 127, k = 0;
+    }
+    else
+    {
+        s = k = 127;
+    }
+    return make_tuple(s, k);
+}
+
+void Filters::shuffle()
+{
+    int i1{}, i2{}, i3{}, i4{};
+    cout << "New order of quarters?\n";
+    cin >> i1;
+    isValid(i1);
+    cin >> i2;
+    isValid(i2);
+    cin >> i3;
+    isValid(i3);
+    cin >> i4;
+    isValid(i4);
+
+    int s{}, t{};
+    if (src.isRGB())
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                for (int k = 0; k < RGB; k++)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                }
+            }
+        }
+
+        tie(s, t) = quadrantIndices(i1);
+        for (int i = 0; i < SIZE / 2; i++)
+        {
+            for (int j = 0; j < SIZE / 2; j++)
+            {
+                for (int k = 0; k < RGB; k++)
+                {
+                    RGBimage[i][j][k] = rgbimage2[i + s][j + t][k];
+                }
+            }
+        }
+        tie(s, t) = quadrantIndices(i2);
+        for (int i = 0; i < SIZE / 2; i++)
+        {
+            for (int j = SIZE / 2; j < SIZE; j++)
+            {
+                for (int k = 0; k < RGB; k++)
+                {
+                    RGBimage[i][j][k] = rgbimage2[i + s][j - (SIZE / 2) + t][k];
+                }
+            }
+        }
+        tie(s, t) = quadrantIndices(i3);
+        for (int i = SIZE / 2; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE / 2; j++)
+            {
+                for (int k = 0; k < RGB; k++)
+                {
+                    RGBimage[i][j][k] = rgbimage2[i - (SIZE / 2) + s][j + t][k];
+                }
+            }
+        }
+        tie(s, t) = quadrantIndices(i4);
+        for (int i = SIZE / 2; i < SIZE; i++)
+        {
+            for (int j = SIZE / 2; j < SIZE; j++)
+            {
+                for (int k = 0; k < RGB; k++)
+                {
+                    RGBimage[i][j][k] = rgbimage2[i - (SIZE / 2) + s][j - (SIZE / 2) + t][k];
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                image2[i][j] = image[i][j];
+            }
+        }
+
+        int s{}, k{};
+        tie(s, k) = quadrantIndices(i1);
+        for (int i = 0; i < SIZE / 2; i++)
+        {
+            for (int j = 0; j < SIZE / 2; j++)
+            {
+                image[i][j] = image2[i + s][j + k];
+            }
+        }
+        tie(s, k) = quadrantIndices(i2);
+        for (int i = 0; i < SIZE / 2; i++)
+        {
+            for (int j = SIZE / 2; j < SIZE; j++)
+            {
+                image[i][j] = image2[i + s][j - (SIZE / 2) + k];
+            }
+        }
+        tie(s, k) = quadrantIndices(i3);
+        for (int i = SIZE / 2; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE / 2; j++)
+            {
+                image[i][j] = image2[i - (SIZE / 2) + s][j + k];
+            }
+        }
+        tie(s, k) = quadrantIndices(i4);
+        for (int i = SIZE / 2; i < SIZE; i++)
+        {
+            for (int j = SIZE / 2; j < SIZE; j++)
+            {
+                image[i][j] = image2[i - (SIZE / 2) + s][j - (SIZE / 2) + k];
+            }
+        }
+    }
+}
+void Filters::enlarge()
+{
+    int n{}, s{}, t{};
+    while (n != 1 && n != 2 && n != 3 && n != 4)
+    {
+        cout << "Which quarter to enlarge 1, 2, 3 or 4?\n";
+        cin >> n;
+    }
+    if (n == 1)
+    {
+        s = t = 0;
+    }
+    else if (n == 2)
+    {
+        s = 0, t = 127;
+    }
+    else if (n == 3)
+    {
+        s = 127, t = 0;
+    }
+    else
+    {
+        s = t = 127;
+    }
+    if (src.isRGB())
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    rgbimage2[i][j][k] = RGBimage[i][j][k];
+                }
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE - 1; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    RGBimage[i][j][k] = rgbimage2[(i / 2) + s][(j / 2) + t][k];
+                }
+            }
+        }
+    }
+    else
+    {
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE; j++)
+            {
+                image2[i][j] = image[i][j];
+            }
+        }
+        for (int i = 0; i < SIZE; i++)
+        {
+            for (int j = 0; j < SIZE - 1; j++)
+            {
+                image[i][j] = image2[(i / 2) + s][(j / 2) + t];
+            }
+        }
     }
 }
 void Filters::filters_menu(string s)
@@ -894,9 +1361,11 @@ void Filters::filters_program()
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case '8':
+            enlarge();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case '9':
+            shrink();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'A':
@@ -904,6 +1373,7 @@ void Filters::filters_program()
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'B':
+            shuffle();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'C':
@@ -916,11 +1386,11 @@ void Filters::filters_program()
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'E':
-            skewV();
+            skewH();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'F':
-            skewH();
+            skewV();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'S':

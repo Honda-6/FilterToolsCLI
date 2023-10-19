@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <cstdlib>
+#include <cmath>
 #include <utility>
 #include "bmplib.cpp"
 #include "Image.cpp"
@@ -8,10 +9,10 @@
 class Filters
 {
 private:
-    static void mirror_r_l();
-    static void mirror_l_r();
-    static void mirror_u_d();
-    static void mirror_d_u();
+    static void mirror_up_to_down();
+    static void mirror_down_to_up();
+    static void mirror_right_to_left();
+    static void mirror_left_to_right();
     static void mirror_vertically();
     static void mirror_horizontally();
     static void rotate_90_deg();
@@ -28,6 +29,8 @@ private:
     static void crop();
     static void blur();
     static void darken();
+    static void enlarge();
+    static void shuffle();
     static void lighten();
     static void shrink_half();
     static void shrink_one_third();
@@ -37,6 +40,7 @@ private:
     static void skewV();
     static void skewH();
     static void filters_menu(string s);
+
 public:
     static void filters_program();
 };
