@@ -803,6 +803,28 @@ void Filters::merge()
     }
 }
 
+void Filters::skewH()
+{
+    if(src.isRGB())
+    {
+
+    }
+    else
+    {
+
+    }
+}
+void Filters::skewV()
+{
+    if(src.isRGB())
+    {
+
+    }
+    else
+    {
+
+    }
+}
 void Filters::filters_menu(string s)
 {
     cout << s + " or select 0 to exit:\n"
@@ -894,9 +916,11 @@ void Filters::filters_program()
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'E':
+            skewV();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'F':
+            skewH();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
         case 'S':

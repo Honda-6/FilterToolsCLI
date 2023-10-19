@@ -34,7 +34,8 @@ private:
     static void shrink_one_fourth();
     static void shrink();
     static void Darken_or_Lighten();
-    static void skew();
+    static void skewV();
+    static void skewH();
     static void filters_menu(string s);
 public:
     static void filters_program();
