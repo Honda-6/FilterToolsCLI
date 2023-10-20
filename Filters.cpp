@@ -589,6 +589,7 @@ void Filters::blur()
                         image2[i][j] = (image[i][j] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1]) / 4;
                     }
                     else
+                        //average of surrounding pixels gives us the blurred pixel
                     {
                         image2[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1] + image[i - last_row + first_row][j + 1]) / 6;
                     }
@@ -634,11 +635,11 @@ void Filters::lighten()
             {
                 if ((image[i][j]) * 1.5 < 256)
                 {
-                    image[i][j] = (image[i][j]) * 1.5;
+                    image[i][j] = (image[i][j]) * 1.5; //to lighten image add to it half its value
                 }
                 else
                 {
-                    image[i][j] = 255;
+                    image[i][j] = 255; //if it is more than 255 (white) just make it white
                 }
             }
         }
@@ -665,7 +666,7 @@ void Filters::darken()
         {
             for (int j = 0; j < SIZE; j++)
             {
-                image[i][j] = (image[i][j]) / 2;
+                image[i][j] = (image[i][j]) / 2; //to darken image decrease the pixel value to half its original value
             }
         }
     }
@@ -750,7 +751,7 @@ void Filters::shrink_one_third()
             {
                 for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k];
+                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k]; // to shrink an image to a third of its original size, fit each pixel to third the final image's index
                 }
             }
         }
@@ -969,11 +970,11 @@ void Filters::skewV()
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    double xtan = ::tan((theta * 22) / (7 * 180));
+    double xtan = ::tan((theta * 22) / (7 * 180)); //get tan after converting angle from degrees to radians
     double x;
-    x = SIZE / (1 + xtan);
-    double step = SIZE - x;
-    double move = step / SIZE;
+    x = SIZE / (1 + xtan); //the new base for the shrunk image
+    double step = SIZE - x; //the step lost due to the new base
+    double move = step / SIZE; //how much we need to move for each pixel to fit the entire skewed image
     if (src.isRGB())
     {
         for (int i{}; i < SIZE; ++i)
@@ -996,7 +997,7 @@ void Filters::skewV()
                 {
                     RGBimage[(i / int(SIZE / x)) + int(step)][j][k] = rgbimage2[i][j][k];
                 }
-                step -= move;
+                step -= move; //decrement lost base each time we move one step closer
             }
         }
     }
