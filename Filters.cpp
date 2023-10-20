@@ -9,6 +9,12 @@ unsigned char RGBimage[SIZE][SIZE][RGB];
 unsigned char rgbimage2[SIZE][SIZE][RGB];
 unsigned char image2[SIZE][SIZE];
 
+
+
+/*
+    This function copies the first half of the image "coloumns" (starting from the middle coloumn till the first coloumn)
+    into the remaining half (starting from the coloumn after the middle one till the last coloumn).
+*/
 void Filters::mirror_left_to_right()
 {
     if (src.isRGB())
@@ -36,6 +42,11 @@ void Filters::mirror_left_to_right()
     }
 }
 
+
+/*
+    This function copies the second half of the image "coloumns" (starting from the middle coloumn till the last coloumn)
+    into the first half (starting from the coloumn preceding the middle one till the first coloumn).
+*/
 void Filters::mirror_right_to_left()
 {
     if (src.isRGB())
@@ -63,6 +74,11 @@ void Filters::mirror_right_to_left()
     }
 }
 
+
+/*
+    This function copies the first half of the image "rows" (starting from the middle row till the first row)
+    into the remaining half (starting from the row after the middle one till the row).
+*/
 void Filters::mirror_up_to_down()
 {
     if (src.isRGB())
@@ -88,6 +104,10 @@ void Filters::mirror_up_to_down()
     }
 }
 
+/*
+    This function copies the second half of the image "rows" (starting from the middle row till the last row)
+    into the first half (starting from the row preceding the middle one till the first row).
+*/
 void Filters::mirror_down_to_up()
 {
     if (src.isRGB())
@@ -150,6 +170,9 @@ void Filters::mirror_half()
     }
 }
 
+/*
+    if the value of the pixel is greater than 127 (closer to 255) then it will be white otherwise it will be black
+*/
 void Filters::Black_White()
 {
     if (src.isRGB())
@@ -170,6 +193,7 @@ void Filters::Black_White()
 
 void Filters::invertImage()
 {
+    /* By subtracting the pixel color from 255, we get the complement which is the opposite shade of the current color. If it’s a light shade, we will get a dark one and vice versa. */
     if (src.isRGB())
     {
         for (int i{}; i < SIZE; i++)
@@ -196,6 +220,7 @@ void Filters::invertImage()
     cout << "Invert filter has been applied!\n";
 }
 
+/* It takes the average of the three colors and store it in a gray scaled 2d matrix */
 void Filters::To_grey()
 {
     for (int i{}; i < SIZE; ++i)
@@ -214,6 +239,7 @@ void Filters::To_grey()
 
 void Filters::mirror_horizontally()
 {
+    // simply swap each opposite pixel (about the middle coloumn) in a row
     if (src.isRGB())
     {
         for (int r{}; r < SIZE; ++r)
@@ -239,6 +265,7 @@ void Filters::mirror_horizontally()
 }
 void Filters::mirror_vertically()
 {
+    // simply swap each opposite pixel (about the middle row) in a coloumn
     if (src.isRGB())
     {
         for (int c{}; c < SIZE; ++c)
@@ -329,6 +356,22 @@ void Filters::rotate()
         }
     }
 }
+/*
+    This Function detects the  objects' edges by comparing values of the pixels, if a certain pixel exceeds a certain value (45)
+    then then such pixel must belong to another object in the image thus the pixel before it will be blacked representing an edge
+
+    Firstly we store the value of the first pixel in a row then we compare the next pixels with that value if one pixel differs from
+    the initial pixel value by 45 otherwise the pixel will be white.
+    If there exists a pixel differs from the stored value by 45, we store the value of that pixel then the pixel before it will be colored in black.
+    such image will be stored in a matrix denoted as horizontal -as the algorith move horizontally- so far, we only detected non-horizontal edges.
+
+    So, we repeat the same process but coloumn by coloumn storing the val of the first pixel in the coloumn then we compare it with the rest and so on.
+    That process will be stored in another matrix named vertical; as the algorithm moved vertically and detects any non vertical edges
+
+    finally we compare both horizontal matrix and vertical matrix and store the minimum value of each corresponding pixel which indicates an edge
+    in the original image
+    by such method we made sure to detect both vertical and horizontal edges
+*/
 
 void Filters::Lining()
 {
@@ -454,6 +497,12 @@ void Filters::Lining()
     printf("Egde detection has been applied\n");
 }
 
+
+
+/*
+    The user inputs the coordinates of the starting position of the part s/he wishes to crop then the user will enter lenght and width of such part
+    Having known the coordinates and the dimensions this function whites out any pixel beyond the boundaries of the given dimensions and positions 
+*/
 void Filters::crop()
 {
     int x{}, y{}, l{}, w{};
@@ -501,6 +550,10 @@ void Filters::crop()
         }
     }
 }
+
+/*
+    average of surrounding pixels gives us the blurred pixel
+*/
 void Filters::blur()
 {
     if (src.isRGB())
@@ -589,7 +642,6 @@ void Filters::blur()
                         image2[i][j] = (image[i][j] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1]) / 4;
                     }
                     else
-                        //average of surrounding pixels gives us the blurred pixel
                     {
                         image2[i][j] = (image[i][j] + image[i][j + 1] + image[i][j - 1] + image[i - last_row + first_row][j] + image[i - last_row + first_row][j - 1] + image[i - last_row + first_row][j + 1]) / 6;
                     }
@@ -605,6 +657,11 @@ void Filters::blur()
         }
     }
 }
+
+
+//to lighten image add to it half its value
+//if the result is more than 255 (white) just make it white
+
 void Filters::lighten()
 {
     if (src.isRGB())
@@ -635,16 +692,18 @@ void Filters::lighten()
             {
                 if ((image[i][j]) * 1.5 < 256)
                 {
-                    image[i][j] = (image[i][j]) * 1.5; //to lighten image add to it half its value
+                    image[i][j] = (image[i][j]) * 1.5; 
                 }
                 else
                 {
-                    image[i][j] = 255; //if it is more than 255 (white) just make it white
+                    image[i][j] = 255;
                 }
             }
         }
     }
 }
+
+//to darken image decrease the pixel value to half its original value
 void Filters::darken()
 {
     if (src.isRGB())
@@ -666,7 +725,7 @@ void Filters::darken()
         {
             for (int j = 0; j < SIZE; j++)
             {
-                image[i][j] = (image[i][j]) / 2; //to darken image decrease the pixel value to half its original value
+                image[i][j] = (image[i][j]) / 2; 
             }
         }
     }
@@ -685,6 +744,9 @@ void Filters::Darken_or_Lighten()
     }
     (selection == 'L') ? lighten() : darken();
 }
+
+
+// to shrink an image to half of its original size, fit each pixel to half the final image's index
 void Filters::shrink_half()
 {
     if (src.isRGB())
@@ -730,6 +792,8 @@ void Filters::shrink_half()
         }
     }
 }
+
+// to shrink an image to a third of its original size, fit each pixel to third the final image's index
 void Filters::shrink_one_third()
 {
     if (src.isRGB())
@@ -751,7 +815,7 @@ void Filters::shrink_one_third()
             {
                 for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k]; // to shrink an image to a third of its original size, fit each pixel to third the final image's index
+                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k]; 
                 }
             }
         }
@@ -776,6 +840,8 @@ void Filters::shrink_one_third()
         }
     }
 }
+
+// to shrink an image to a fourth of its original size, fit each pixel to quarter the final image's index
 void Filters::shrink_one_fourth()
 {
     if (src.isRGB())
@@ -847,6 +913,11 @@ void Filters::shrink()
         cout << "Image Shrinked to its quarter!\n";
     }
 }
+
+
+/*
+    To merge two photos we simply take the average of each corresponding pixel in both images
+*/
 void Filters::merge()
 {
     Image img;
@@ -891,7 +962,8 @@ void Filters::merge()
                     }
                 }
             }
-            src = img; // since the second image is rgb and first image is gray-scaled then we have to assign properties of second image to source for it save it in rgb matrix
+            src = img; // since the second image is rgb and source image is gray-scaled then we have to assign properties of the second image to source 
+                       //for it to be saved in the rgb matrix
         }
     }
     else
@@ -1024,8 +1096,10 @@ void Filters::skewV()
     }
     cout << "Image skewed " << theta << " degrees to the right!" << endl;
 }
+
 bool isValid(int &num)
 {
+    // checks if the user entered a valid quadrant
     while (num < 1 || num > 4)
     {
         cout << "Invalid Number\n";
@@ -1037,6 +1111,7 @@ bool isValid(int &num)
 
 tuple<int, int> quadrantIndices(int n)
 {
+    // returns two indices s and t which represent the starting index of row and column of the desired quarter
     int s{}, k{};
     if (n == 1)
     {
@@ -1182,7 +1257,7 @@ void Filters::enlarge()
         cout << "Which quarter to enlarge 1, 2, 3 or 4?\n";
         cin >> n;
     }
-    if (n == 1)
+    if (n == 1) // checks for desired quadrant to get s and t which represent the starting index of row and column 
     {
         s = t = 0;
     }
@@ -1216,7 +1291,7 @@ void Filters::enlarge()
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    RGBimage[i][j][k] = rgbimage2[(i / 2) + s][(j / 2) + t][k];
+                    RGBimage[i][j][k] = rgbimage2[(i / 2) + s][(j / 2) + t][k]; // dividing by 2 in order to repeat the previous pixel 
                 }
             }
         }
@@ -1355,10 +1430,14 @@ void Filters::filters_program()
         }
     }
 }
+
+/*
+    this function excutes a command on the system's shell/bash to open up the edited photo right before the program terminates
+*/
 void open_image(char *file)
 {
-
-#ifdef __linux__
+    //checks if the current system is linux or windows as each OS has its own commands
+#ifdef __linux__ 
     char command[300]{"xdg-open "};
     strcat(command, get_current_dir_name());
     strcat(command, "/");
