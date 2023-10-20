@@ -15,9 +15,6 @@ private:
     static void mirror_left_to_right();
     static void mirror_vertically();
     static void mirror_horizontally();
-    static void rotate_90_deg();
-    static void rotate_180_deg();
-    static void rotate_270_deg();
     static void rotate();
     static void merge();
     static void Black_White();
