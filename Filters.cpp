@@ -1341,7 +1341,7 @@ void Filters::filters_menu(string s)
          << "D/d- Crop Image\n"
          << "E/e- Skew Image to the right\n"
          << "F/f- Skew Image upwards\n"
-         << "S/s- To save and exit\n"
+         << "S/s- Save and exit\n"
          << "0- Exit without saving\n";
 }
 
