@@ -150,76 +150,6 @@ void Filters::mirror_half()
     }
 }
 
-void Filters::rotate_90_deg()
-{
-    int i{}, j{SIZE - 1};
-    bool colored{src.isRGB()};
-    while (i < j)
-    {
-        for (int x = i; x < j; ++x)
-        {
-            if (colored)
-            {
-                swap(RGBimage[i][x], RGBimage[x][j]);
-                swap(RGBimage[i][x], RGBimage[j][j - x + i]);
-                swap(RGBimage[i][x], RGBimage[j - x + i][i]);
-            }
-            else
-            {
-                swap(image[i][x], image[x][j]);
-                swap(image[i][x], image[j][j - x + i]);
-                swap(image[i][x], image[j - x + i][i]);
-            }
-        }
-        i++, j--;
-    }
-}
-void Filters::rotate_180_deg()
-{
-    int rows{};
-    bool colored{src.isRGB()};
-    while (rows < SIZE / 2)
-    {
-        int coloumns{};
-        while (coloumns < SIZE)
-        {
-            if (colored)
-            {
-                swap(RGBimage[rows][coloumns], RGBimage[SIZE - 1 - rows][SIZE - 1 - coloumns]);
-            }
-            else
-            {
-                swap(image[rows][coloumns], image[SIZE - 1 - rows][SIZE - 1 - coloumns]);
-            }
-            coloumns++;
-        }
-        rows++;
-    }
-}
-void Filters::rotate_270_deg()
-{
-    int i{}, j{SIZE - 1};
-    bool colored{src.isRGB()};
-    while (i < j)
-    {
-        for (int x = j; x > i; --x)
-        {
-            if (colored)
-            {
-                swap(RGBimage[i][x], RGBimage[j - x + i][i]);
-                swap(RGBimage[i][x], RGBimage[j][j - x + i]);
-                swap(RGBimage[i][x], RGBimage[x][j]);
-            }
-            else
-            {
-                swap(image[i][x], image[j - x + i][i]);
-                swap(image[i][x], image[j][j - x + i]);
-                swap(image[i][x], image[x][j]);
-            }
-        }
-        i++, j--;
-    }
-}
 void Filters::Black_White()
 {
     if (src.isRGB())
@@ -356,7 +286,7 @@ void Filters::flip()
 }
 void Filters::rotate()
 {
-    int degree{};
+    int degree{}, n{};
     cout << "Rotate (90), (180), (270) or (360) degrees? ";
     cin >> degree;
     while (degree != 90 && degree != 180 && degree != 270 && degree != 360)
@@ -365,25 +295,41 @@ void Filters::rotate()
         cout << "\nPlease Select from the given degrees (90), (180), (270), (360): ";
         cin >> degree;
     }
-    switch (degree)
-    {
-    case 90:
-        rotate_90_deg();
-        cout << "Image rotated 90 degrees clockwise!\n";
-        break;
-    case 180:
-        rotate_180_deg();
-        cout << "Image rotated 180 degrees clockwise!\n";
-        break;
-    case 270:
-        rotate_270_deg();
-        cout << "Image rotated 270 degrees clockwise!\n";
-        break;
-    default:
-        cout << "Image rotated 360 degrees clockwise!\n";
-        break;
+    if (degree == 90){
+        n = 1;
+    }
+    else if (degree == 180){
+        n = 2;
+    }else if (degree == 270){
+        n = 3;
+    }
+    if (src.isRGB()){
+        for (int s = 0; s < n; s++)
+        {
+            for (int i = 0; i < SIZE-i-1; i++){
+                for (int j = i; j < SIZE-i-1; j++){
+                    for (int k = 0; k < 3; k++)
+                    {
+                        swap(RGBimage[i][j][k], RGBimage[j][SIZE-1-i][k]);
+                        swap(RGBimage[i][j][k], RGBimage[SIZE-1-i][SIZE-1-j][k]);
+                        swap(RGBimage[i][j][k], RGBimage[SIZE-1-j][i][k]);
+                    }
+                }
+            }
+        }
+    }else{
+        for (int s = 0; s < n; s++){
+            for (int i = 0; i < SIZE-i-1; i++){
+                for (int j = i; j < SIZE-i-1; j++){
+                    swap(image[i][j], image[j][SIZE-1-i]);
+                    swap(image[i][j], image[SIZE-1-i][SIZE-1-j]);
+                    swap(image[i][j], image[SIZE-1-j][i]);
+                }
+            }
+        }
     }
 }
+
 void Filters::Lining()
 {
     unsigned char hori[SIZE][SIZE];
