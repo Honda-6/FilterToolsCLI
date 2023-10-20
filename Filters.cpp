@@ -978,15 +978,16 @@ void Filters::merge()
     }
 }
 
+
 void Filters::skewH()
 {
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    theta=theta*22(7*180);
-    double xtan = ::tan(theta);
+    int angle = theta;
+    double xtan = ::tan((theta * 22) / (7 * 180));
     double x;
-    x = SIZE / (1 + 1/xtan);
+    x = SIZE / (1 + xtan);
     double step = SIZE - x;
     double move = step / SIZE;
     if (src.isRGB())
@@ -1002,17 +1003,16 @@ void Filters::skewH()
                 }
             }
         }
-        for (int j = 0; j < SIZE; j++)
+        for(int i{}; i < SIZE; ++i)
         {
-            step = ceil(SIZE - x);
-            for (int i = 0; i < SIZE; i++)
+            for(int j{}; j < SIZE && int(j * (x/SIZE))+(int)step < SIZE; ++j)
             {
-                for (unsigned short k{}; k < RGB; ++k)
+                for(unsigned int k{}; k < RGB; ++k)
                 {
-                    RGBimage[i][(j / int(SIZE / x)) + int(step)][k] = rgbimage2[i][j][k];
+                    RGBimage[i][int(j * (x/SIZE))+(int)step][k] = rgbimage2[i][j][k];
                 }
-                step -= move;
             }
+            step -= move;
         }
     }
     else
@@ -1025,25 +1025,25 @@ void Filters::skewH()
                 image[i][j] = 255;
             }
         }
-        // shrink and shift
-        for (int j = 0; j < SIZE; j++)
+        for(int i{}; i < SIZE; ++i)
         {
-            step = ceil(SIZE - x);
-            for (int i = 0; i < SIZE; i++)
+            for(int j{}; j < SIZE && int(j * (x/SIZE))+(int)step < SIZE; ++j)
             {
-                image[i][(j / int(SIZE / x)) + int(step)] = image2[i][j];
-                step -= move;
+                image[i][int(j * (x/SIZE))+(int)step] = image2[i][j];
             }
+            step -= move;
         }
     }
-    cout << "Image skewed " << theta << " degrees upwards!" << endl;
+    cout << "Image skewed " << angle<< " degrees to the right!" << endl;
 }
 void Filters::skewV()
 {
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    theta= theta*22/(7*180)//convert skew angle to radians
+    int angle = 90 - theta;
+    theta = 90 - theta;
+    theta= theta*22/(7*180);//convert skew angle to radians
     double xtan = ::tan(theta); //get tan
     double x;
     x = SIZE / (1 + 1/xtan); //the new base for the shrunk image
@@ -1062,17 +1062,16 @@ void Filters::skewV()
                 }
             }
         }
-        for (int i = 0; i < SIZE; i++)
+        for(int j{}; j < SIZE; ++j)
         {
-            step = ceil(SIZE - x);
-            for (int j = 0; j < SIZE; j++)
+            for(int i{}; i < SIZE && int(i * (x/SIZE))+(int)step < SIZE; ++i)
             {
-                for (unsigned short k{}; k < RGB; ++k)
+                for(unsigned short k{}; k < RGB; ++k)
                 {
-                    RGBimage[(i / int(SIZE / x)) + int(step)][j][k] = rgbimage2[i][j][k];
+                    RGBimage[int(i * (x/SIZE))+(int)step][j][k] = rgbimage2[i][j][k];
                 }
-                step -= move; //decrement lost base each time we move one step closer
             }
+            step -= move;
         }
     }
     else
@@ -1086,17 +1085,25 @@ void Filters::skewV()
             }
         }
         // shrink and shift
-        for (int i = 0; i < SIZE; i++)
+        // for (int i = 0; i < SIZE; i++)
+        // {
+        //     step = ceil(SIZE - x);
+        //     for (int j = 0; j < SIZE; j++)
+        //     {
+        //         image[(i / int(SIZE / x)) + int(step)][j] = image2[i][j];
+        //         step -= move;
+        //     }
+        // }
+        for(int j{}; j < SIZE; ++j)
         {
-            step = ceil(SIZE - x);
-            for (int j = 0; j < SIZE; j++)
+            for(int i{}; i < SIZE && int(i * (x/SIZE))+(int)step < SIZE; ++i)
             {
-                image[(i / int(SIZE / x)) + int(step)][j] = image2[i][j];
-                step -= move;
+                image[int(i * (x/SIZE))+(int)step][j] = image2[i][j];
             }
+            step -= move;
         }
     }
-    cout << "Image skewed " << theta << " degrees to the right!" << endl;
+    cout << "Image skewed " << angle << " degrees upwards!" << endl;
 }
 
 bool isValid(int &num)
