@@ -984,7 +984,12 @@ void Filters::skewH()
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    int angle = theta;
+    while(theta == 90 || theta == -90)
+    {
+        cout << "Error: cannot Skew image by 90 degree!" << endl;
+        cout << "Please enter another angle: ";
+        cin >> theta;
+    }
     double xtan = ::tan((theta * 22) / (7 * 180));
     double x;
     x = SIZE / (1 + xtan);
@@ -1034,19 +1039,22 @@ void Filters::skewH()
             step -= move;
         }
     }
-    cout << "Image skewed " << angle<< " degrees to the right!" << endl;
+    cout << "Image skewed " << theta << " degrees to the right!" << endl;
 }
 void Filters::skewV()
 {
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    int angle = 90 - theta;
-    theta = 90 - theta;
-    theta= theta*22/(7*180);//convert skew angle to radians
-    double xtan = ::tan(theta); //get tan
+    while(theta == 90 || theta == -90)
+    {
+        cout << "Error: cannot Skew image by 90 degree!" << endl;
+        cout << "Please enter another angle: ";
+        cin >> theta;
+    }
+    double xtan = ::tan((theta * 22) / (7 * 180)); ////convert skew angle to radians to get tan
     double x;
-    x = SIZE / (1 + 1/xtan); //the new base for the shrunk image
+    x = SIZE / (1 + xtan); //the new base for the shrunk image
     double step = SIZE - x; //the step lost due to the new base
     double move = step / SIZE; //how much we need to move for each pixel to fit the entire skewed image
     if (src.isRGB())
@@ -1084,16 +1092,6 @@ void Filters::skewV()
                 image[i][j] = 255;
             }
         }
-        // shrink and shift
-        // for (int i = 0; i < SIZE; i++)
-        // {
-        //     step = ceil(SIZE - x);
-        //     for (int j = 0; j < SIZE; j++)
-        //     {
-        //         image[(i / int(SIZE / x)) + int(step)][j] = image2[i][j];
-        //         step -= move;
-        //     }
-        // }
         for(int j{}; j < SIZE; ++j)
         {
             for(int i{}; i < SIZE && int(i * (x/SIZE))+(int)step < SIZE; ++i)
@@ -1103,7 +1101,7 @@ void Filters::skewV()
             step -= move;
         }
     }
-    cout << "Image skewed " << angle << " degrees upwards!" << endl;
+    cout << "Image skewed " << theta << " degrees upwards!" << endl;
 }
 
 bool isValid(int &num)
