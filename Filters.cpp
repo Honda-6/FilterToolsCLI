@@ -983,9 +983,10 @@ void Filters::skewH()
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    double xtan = ::tan((theta * 22) / (7 * 180));
+    theta=theta*22(7*180);
+    double xtan = ::tan(theta);
     double x;
-    x = SIZE / (1 + xtan);
+    x = SIZE / (1 + 1/xtan);
     double step = SIZE - x;
     double move = step / SIZE;
     if (src.isRGB())
@@ -1042,9 +1043,10 @@ void Filters::skewV()
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    double xtan = ::tan((theta * 22) / (7 * 180)); //get tan after converting angle from degrees to radians
+    theta= theta*22/(7*180)//convert skew angle to radians
+    double xtan = ::tan(theta); //get tan
     double x;
-    x = SIZE / (1 + xtan); //the new base for the shrunk image
+    x = SIZE / (1 + 1/xtan); //the new base for the shrunk image
     double step = SIZE - x; //the step lost due to the new base
     double move = step / SIZE; //how much we need to move for each pixel to fit the entire skewed image
     if (src.isRGB())
