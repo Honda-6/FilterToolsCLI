@@ -739,7 +739,7 @@ void Filters::Darken_or_Lighten()
     selection = toupper(selection);
     while (selection != 'D' && selection != 'L')
     {
-        cout << "\nInvalid selections!!\nPlease enter [D/d] to darken or [L/l] to lighten the image: ";
+        cout << "\nInvalid selection!!\nPlease enter [D/d] to darken or [L/l] to lighten the image: ";
         cin >> selection;
     }
     (selection == 'L') ? lighten() : darken();
@@ -986,7 +986,7 @@ void Filters::skewH()
     cin >> theta;
     while(theta == 90 || theta == -90)
     {
-        cout << "Error: cannot Skew image by 90 degree!" << endl;
+        cout << "Error: cannot Skew image by 90 degrees!" << endl;
         cout << "Please enter another angle: ";
         cin >> theta;
     }
@@ -1048,7 +1048,7 @@ void Filters::skewV()
     cin >> theta;
     while(theta == 90 || theta == -90)
     {
-        cout << "Error: cannot Skew image by 90 degree!" << endl;
+        cout << "Error: cannot Skew image by 90 degrees!" << endl;
         cout << "Please enter another angle: ";
         cin >> theta;
     }
@@ -1106,7 +1106,7 @@ void Filters::skewV()
 
 bool isValid(int &num)
 {
-    // checks if the user entered a valid quadrant
+    // checks if the user entered a valid quarter
     while (num < 1 || num > 4)
     {
         cout << "Invalid Number\n";
@@ -1264,7 +1264,7 @@ void Filters::enlarge()
         cout << "Which quarter to enlarge 1, 2, 3 or 4?\n";
         cin >> n;
     }
-    if (n == 1) // checks for desired quadrant to get s and t which represent the starting index of row and column 
+    if (n == 1) // checks for desired quarter to get s and t which represent the starting index of row and column 
     {
         s = t = 0;
     }
