@@ -9,8 +9,6 @@ unsigned char RGBimage[SIZE][SIZE][RGB];
 unsigned char rgbimage2[SIZE][SIZE][RGB];
 unsigned char image2[SIZE][SIZE];
 
-
-
 /*
     This function copies the first half of the image "coloumns" (starting from the middle coloumn till the first coloumn)
     into the remaining half (starting from the coloumn after the middle one till the last coloumn).
@@ -42,7 +40,6 @@ void Filters::mirror_left_to_right()
     }
 }
 
-
 /*
     This function copies the second half of the image "coloumns" (starting from the middle coloumn till the last coloumn)
     into the first half (starting from the coloumn preceding the middle one till the first coloumn).
@@ -73,7 +70,6 @@ void Filters::mirror_right_to_left()
         }
     }
 }
-
 
 /*
     This function copies the first half of the image "rows" (starting from the middle row till the first row)
@@ -223,16 +219,22 @@ void Filters::invertImage()
 /* It takes the average of the three colors and store it in a gray scaled 2d matrix */
 void Filters::To_grey()
 {
-    for (int i{}; i < SIZE; ++i)
+    if (src.isRGB())
     {
-        for (int j{}; j < SIZE; ++j)
+        for (int i{}; i < SIZE; ++i)
         {
-            int avg{};
-            for (unsigned short k{}; k < RGB; ++k)
+            for (int j{}; j < SIZE; ++j)
             {
-                avg += RGBimage[i][j][k];
+                int avg{};
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    avg += RGBimage[i][j][k];
+                }
+                for (unsigned short k{}; k < RGB; ++k)
+                {
+                    RGBimage[i][j][k] = avg / 3;
+                }
             }
-            image[i][j] = avg / 3;
         }
     }
 }
@@ -322,35 +324,47 @@ void Filters::rotate()
         cout << "\nPlease Select from the given degrees (90), (180), (270), (360): ";
         cin >> degree;
     }
-    if (degree == 90){
+    if (degree == 90)
+    {
         n = 1;
     }
-    else if (degree == 180){
+    else if (degree == 180)
+    {
         n = 2;
-    }else if (degree == 270){
+    }
+    else if (degree == 270)
+    {
         n = 3;
     }
-    if (src.isRGB()){
+    if (src.isRGB())
+    {
         for (int s = 0; s < n; s++)
         {
-            for (int i = 0; i < SIZE-i-1; i++){
-                for (int j = i; j < SIZE-i-1; j++){
+            for (int i = 0; i < SIZE - i - 1; i++)
+            {
+                for (int j = i; j < SIZE - i - 1; j++)
+                {
                     for (int k = 0; k < 3; k++)
                     {
-                        swap(RGBimage[i][j][k], RGBimage[j][SIZE-1-i][k]);
-                        swap(RGBimage[i][j][k], RGBimage[SIZE-1-i][SIZE-1-j][k]);
-                        swap(RGBimage[i][j][k], RGBimage[SIZE-1-j][i][k]);
+                        swap(RGBimage[i][j][k], RGBimage[j][SIZE - 1 - i][k]);
+                        swap(RGBimage[i][j][k], RGBimage[SIZE - 1 - i][SIZE - 1 - j][k]);
+                        swap(RGBimage[i][j][k], RGBimage[SIZE - 1 - j][i][k]);
                     }
                 }
             }
         }
-    }else{
-        for (int s = 0; s < n; s++){
-            for (int i = 0; i < SIZE-i-1; i++){
-                for (int j = i; j < SIZE-i-1; j++){
-                    swap(image[i][j], image[j][SIZE-1-i]);
-                    swap(image[i][j], image[SIZE-1-i][SIZE-1-j]);
-                    swap(image[i][j], image[SIZE-1-j][i]);
+    }
+    else
+    {
+        for (int s = 0; s < n; s++)
+        {
+            for (int i = 0; i < SIZE - i - 1; i++)
+            {
+                for (int j = i; j < SIZE - i - 1; j++)
+                {
+                    swap(image[i][j], image[j][SIZE - 1 - i]);
+                    swap(image[i][j], image[SIZE - 1 - i][SIZE - 1 - j]);
+                    swap(image[i][j], image[SIZE - 1 - j][i]);
                 }
             }
         }
@@ -497,11 +511,9 @@ void Filters::Lining()
     printf("Egde detection has been applied\n");
 }
 
-
-
 /*
     The user inputs the coordinates of the starting position of the part s/he wishes to crop then the user will enter lenght and width of such part
-    Having known the coordinates and the dimensions this function whites out any pixel beyond the boundaries of the given dimensions and positions 
+    Having known the coordinates and the dimensions this function whites out any pixel beyond the boundaries of the given dimensions and positions
 */
 void Filters::crop()
 {
@@ -658,9 +670,8 @@ void Filters::blur()
     }
 }
 
-
-//to lighten image add to it half its value
-//if the result is more than 255 (white) just make it white
+// to lighten image add to it half its value
+// if the result is more than 255 (white) just make it white
 
 void Filters::lighten()
 {
@@ -692,7 +703,7 @@ void Filters::lighten()
             {
                 if ((image[i][j]) * 1.5 < 256)
                 {
-                    image[i][j] = (image[i][j]) * 1.5; 
+                    image[i][j] = (image[i][j]) * 1.5;
                 }
                 else
                 {
@@ -703,7 +714,7 @@ void Filters::lighten()
     }
 }
 
-//to darken image decrease the pixel value to half its original value
+// to darken image decrease the pixel value to half its original value
 void Filters::darken()
 {
     if (src.isRGB())
@@ -725,7 +736,7 @@ void Filters::darken()
         {
             for (int j = 0; j < SIZE; j++)
             {
-                image[i][j] = (image[i][j]) / 2; 
+                image[i][j] = (image[i][j]) / 2;
             }
         }
     }
@@ -744,7 +755,6 @@ void Filters::Darken_or_Lighten()
     }
     (selection == 'L') ? lighten() : darken();
 }
-
 
 // to shrink an image to half of its original size, fit each pixel to half the final image's index
 void Filters::shrink_half()
@@ -815,7 +825,7 @@ void Filters::shrink_one_third()
             {
                 for (unsigned short k = 0; k < RGB; k++)
                 {
-                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k]; 
+                    RGBimage[i / 3][j / 3][k] = rgbimage2[i][j][k];
                 }
             }
         }
@@ -914,7 +924,6 @@ void Filters::shrink()
     }
 }
 
-
 /*
     To merge two photos we simply take the average of each corresponding pixel in both images
 */
@@ -962,8 +971,8 @@ void Filters::merge()
                     }
                 }
             }
-            src = img; // since the second image is rgb and source image is gray-scaled then we have to assign properties of the second image to source 
-                       //for it to be saved in the rgb matrix
+            src = img; // since the second image is rgb and source image is gray-scaled then we have to assign properties of the second image to source
+                       // for it to be saved in the rgb matrix
         }
     }
     else
@@ -978,13 +987,12 @@ void Filters::merge()
     }
 }
 
-
 void Filters::skewH()
 {
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    while(theta == 90 || theta == -90)
+    while (theta == 90 || theta == -90)
     {
         cout << "Error: cannot Skew image by 90 degrees!" << endl;
         cout << "Please enter another angle: ";
@@ -1008,13 +1016,13 @@ void Filters::skewH()
                 }
             }
         }
-        for(int i{}; i < SIZE; ++i)
+        for (int i{}; i < SIZE; ++i)
         {
-            for(int j{}; j < SIZE && int(j * (x/SIZE))+(int)step < SIZE; ++j)
+            for (int j{}; j < SIZE && int(j * (x / SIZE)) + (int)step < SIZE; ++j)
             {
-                for(unsigned int k{}; k < RGB; ++k)
+                for (unsigned int k{}; k < RGB; ++k)
                 {
-                    RGBimage[i][int(j * (x/SIZE))+(int)step][k] = rgbimage2[i][j][k];
+                    RGBimage[i][int(j * (x / SIZE)) + (int)step][k] = rgbimage2[i][j][k];
                 }
             }
             step -= move;
@@ -1030,11 +1038,11 @@ void Filters::skewH()
                 image[i][j] = 255;
             }
         }
-        for(int i{}; i < SIZE; ++i)
+        for (int i{}; i < SIZE; ++i)
         {
-            for(int j{}; j < SIZE && int(j * (x/SIZE))+(int)step < SIZE; ++j)
+            for (int j{}; j < SIZE && int(j * (x / SIZE)) + (int)step < SIZE; ++j)
             {
-                image[i][int(j * (x/SIZE))+(int)step] = image2[i][j];
+                image[i][int(j * (x / SIZE)) + (int)step] = image2[i][j];
             }
             step -= move;
         }
@@ -1046,7 +1054,7 @@ void Filters::skewV()
     double theta;
     cout << "enter angle: ";
     cin >> theta;
-    while(theta == 90 || theta == -90)
+    while (theta == 90 || theta == -90)
     {
         cout << "Error: cannot Skew image by 90 degrees!" << endl;
         cout << "Please enter another angle: ";
@@ -1054,9 +1062,9 @@ void Filters::skewV()
     }
     double xtan = ::tan((theta * 22) / (7 * 180)); ////convert skew angle to radians to get tan
     double x;
-    x = SIZE / (1 + xtan); //the new base for the shrunk image
-    double step = SIZE - x; //the step lost due to the new base
-    double move = step / SIZE; //how much we need to move for each pixel to fit the entire skewed image
+    x = SIZE / (1 + xtan);     // the new base for the shrunk image
+    double step = SIZE - x;    // the step lost due to the new base
+    double move = step / SIZE; // how much we need to move for each pixel to fit the entire skewed image
     if (src.isRGB())
     {
         for (int i{}; i < SIZE; ++i)
@@ -1070,13 +1078,13 @@ void Filters::skewV()
                 }
             }
         }
-        for(int j{}; j < SIZE; ++j)
+        for (int j{}; j < SIZE; ++j)
         {
-            for(int i{}; i < SIZE && int(i * (x/SIZE))+(int)step < SIZE; ++i)
+            for (int i{}; i < SIZE && int(i * (x / SIZE)) + (int)step < SIZE; ++i)
             {
-                for(unsigned short k{}; k < RGB; ++k)
+                for (unsigned short k{}; k < RGB; ++k)
                 {
-                    RGBimage[int(i * (x/SIZE))+(int)step][j][k] = rgbimage2[i][j][k];
+                    RGBimage[int(i * (x / SIZE)) + (int)step][j][k] = rgbimage2[i][j][k];
                 }
             }
             step -= move;
@@ -1092,11 +1100,11 @@ void Filters::skewV()
                 image[i][j] = 255;
             }
         }
-        for(int j{}; j < SIZE; ++j)
+        for (int j{}; j < SIZE; ++j)
         {
-            for(int i{}; i < SIZE && int(i * (x/SIZE))+(int)step < SIZE; ++i)
+            for (int i{}; i < SIZE && int(i * (x / SIZE)) + (int)step < SIZE; ++i)
             {
-                image[int(i * (x/SIZE))+(int)step][j] = image2[i][j];
+                image[int(i * (x / SIZE)) + (int)step][j] = image2[i][j];
             }
             step -= move;
         }
@@ -1264,7 +1272,7 @@ void Filters::enlarge()
         cout << "Which quarter to enlarge 1, 2, 3 or 4?\n";
         cin >> n;
     }
-    if (n == 1) // checks for desired quarter to get s and t which represent the starting index of row and column 
+    if (n == 1) // checks for desired quarter to get s and t which represent the starting index of row and column
     {
         s = t = 0;
     }
@@ -1298,7 +1306,7 @@ void Filters::enlarge()
             {
                 for (int k = 0; k < 3; k++)
                 {
-                    RGBimage[i][j][k] = rgbimage2[(i / 2) + s][(j / 2) + t][k]; // dividing by 2 in order to repeat the previous pixel 
+                    RGBimage[i][j][k] = rgbimage2[(i / 2) + s][(j / 2) + t][k]; // dividing by 2 in order to repeat the previous pixel
                 }
             }
         }
@@ -1339,6 +1347,7 @@ void Filters::filters_menu(string s)
          << "D/d- Crop Image\n"
          << "E/e- Skew Image to the right\n"
          << "F/f- Skew Image upwards\n"
+         << "G/g- Grey out RGB image\n"
          << "S/s- Save and exit\n"
          << "0- Exit without saving\n";
 }
@@ -1422,6 +1431,11 @@ void Filters::filters_program()
             skewV();
             filters_menu("Select another filter you wish to apply to the same modified image");
             break;
+        case 'G':
+            To_grey();
+            cout << "Image greyed out!" <<endl;
+            filters_menu("Select another filter you wish to apply to the same modified image");
+            break;
         case 'S':
             if (overwrite())
                 overwrite_image();
@@ -1443,8 +1457,8 @@ void Filters::filters_program()
 */
 void open_image(char *file)
 {
-    //checks if the current system is linux or windows as each OS has its own commands
-#ifdef __linux__ 
+    // checks if the current system is linux or windows as each OS has its own commands
+#ifdef __linux__
     char command[300]{"xdg-open "};
     strcat(command, get_current_dir_name());
     strcat(command, "/");
